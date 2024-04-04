@@ -385,15 +385,17 @@ if __name__ == '__main__':
     if args.launcher == 'none':  # disabled distributed training
         opt['dist'] = False
         trainer.rank = -1
-        if len(opt['gpu_ids']) == 1:
-            torch.cuda.set_device(opt['gpu_ids'][0])
+        device = torch.device("cpu")  # Set the device to CPU
         print('Disabled distributed training.')
     else:
         opt['dist'] = True
         init_dist('nccl')
         trainer.world_size = torch.distributed.get_world_size()
         trainer.rank = torch.distributed.get_rank()
-        torch.cuda.set_device(torch.distributed.get_rank())
+        device = torch.device("cpu")  # Set the device to CPU
+        print('Enabled distributed training.')
+        
+   
 
     trainer.init(args.opt, opt, args.launcher)
     trainer.do_training()
